@@ -51,6 +51,23 @@ button:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--f
 .toast{position:fixed;left:50%;bottom:78px;transform:translate(-50%,16px);opacity:0;pointer-events:none;background:var(--card-bg);color:var(--card);border:1px solid var(--card-line);padding:10px 18px;border-radius:11px;font-weight:700;transition:.22s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* --- phone: reflow the table into stacked cards so 中文 is easy to edit --- */
+@media (max-width:640px){
+  .hd{padding:12px 14px}.hd p{font-size:12px}
+  .wrap{padding:12px 12px 160px}
+  .tblwrap{border:none;background:transparent;box-shadow:none;overflow:visible}
+  table{min-width:0;display:block}
+  thead{display:none}
+  tbody{display:block}
+  tbody tr{display:block;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:var(--shadow);margin-bottom:12px;padding:8px 12px 12px}
+  tbody td{display:block;border:none;padding:5px 0;width:auto}
+  td.idx{width:auto;text-align:left;color:var(--sub);font-size:12px;font-weight:700}
+  td.sec{white-space:normal}
+  input.num{width:64px}
+  input.zh{font-size:17px;padding:11px 12px}
+  td.ko::before{content:"韓文原文";display:block;font-size:11px;color:var(--sub);margin-bottom:4px;letter-spacing:.04em}
+  td:last-child::before{content:"中文（可編輯）";display:block;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;letter-spacing:.04em}
+}
 </style>
 </head>
 <body>

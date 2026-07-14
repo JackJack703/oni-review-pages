@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>韓文影片字幕編輯器</title>
+<style>
+:root{--bg:#f5f7fa;--panel:#fff;--panel2:#eef2f6;--ink:#18212e;--sub:#5b6876;--line:#dbe2ea;--accent:#0284c7;--accent-ink:#fff;--deco:#c81f7a;--deco-bg:#fce7f1;--deco-line:#f6b9d6;--card:#0f8a63;--card-bg:#e2f6ee;--card-line:#a9e3cd;--zh-bg:#fffdf4;--zh-ink:#7a5b00;--focus:#0284c7;--shadow:0 1px 2px rgba(20,30,45,.06),0 6px 20px rgba(20,30,45,.06)}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1319;--panel:#161d26;--panel2:#1c2530;--ink:#e7edf3;--sub:#93a1b0;--line:#26313d;--accent:#38bdf8;--accent-ink:#04222e;--deco:#f472b6;--deco-bg:#341027;--deco-line:#6d1b52;--card:#34d399;--card-bg:#082a20;--card-line:#10553f;--zh-bg:#12171d;--zh-ink:#fde68a;--focus:#38bdf8;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32)}}
+:root[data-theme="light"]{--bg:#f5f7fa;--panel:#fff;--panel2:#eef2f6;--ink:#18212e;--sub:#5b6876;--line:#dbe2ea;--accent:#0284c7;--accent-ink:#fff;--deco:#c81f7a;--deco-bg:#fce7f1;--deco-line:#f6b9d6;--card:#0f8a63;--card-bg:#e2f6ee;--card-line:#a9e3cd;--zh-bg:#fffdf4;--zh-ink:#7a5b00;--focus:#0284c7;--shadow:0 1px 2px rgba(20,30,45,.06),0 6px 20px rgba(20,30,45,.06)}
+:root[data-theme="dark"]{--bg:#0e1319;--panel:#161d26;--panel2:#1c2530;--ink:#e7edf3;--sub:#93a1b0;--line:#26313d;--accent:#38bdf8;--accent-ink:#04222e;--deco:#f472b6;--deco-bg:#341027;--deco-line:#6d1b52;--card:#34d399;--card-bg:#082a20;--card-line:#10553f;--zh-bg:#12171d;--zh-ink:#fde68a;--focus:#38bdf8;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32)}
+*{box-sizing:border-box}
+.app{font:15px/1.55 -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100%}
+.hd{position:sticky;top:0;z-index:6;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--line);padding:16px 22px}
+.hd h1{margin:0;font-size:18px;font-weight:750;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.hd h1 .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.hd p{margin:6px 0 0;color:var(--sub);font-size:13px;max-width:70ch}
+.legend{display:flex;gap:14px;margin-top:9px;flex-wrap:wrap;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;line-height:1.7}
+.badge.deco{color:var(--deco);background:var(--deco-bg);border:1px solid var(--deco-line)}
+.badge.card{color:var(--card);background:var(--card-bg);border:1px solid var(--card-line)}
+.badge.count{color:var(--sub);background:var(--panel2);border:1px solid var(--line)}
+.wrap{max-width:1060px;margin:0 auto;padding:14px 22px 140px}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse;min-width:680px}
+thead th{position:sticky;top:104px;z-index:3;background:var(--panel2);color:var(--sub);font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+td.idx{color:var(--sub);font-variant-numeric:tabular-nums;width:40px;text-align:right;padding-right:14px}
+td.sec{width:150px;white-space:nowrap}
+.sec-in{display:inline-flex;align-items:center;gap:4px;color:var(--sub);font-variant-numeric:tabular-nums;font-size:13px}
+td.ko{width:36%;color:color-mix(in srgb,var(--ink) 82%,var(--sub))}
+tr.deco td.ko{color:var(--deco)} tr.card td.ko{color:var(--card)}
+.tag{margin-left:7px;vertical-align:1px}
+input{font:inherit;color:inherit;background:transparent;border:1px solid transparent;border-radius:8px;padding:6px 9px;width:100%}
+input.num{width:58px;text-align:center;padding:5px 4px;color:var(--sub);border:1px solid var(--line);background:var(--bg);font-variant-numeric:tabular-nums;font-size:13px}
+input.ko{border:1px dashed transparent}
+input.ko:hover{border-color:var(--line)}
+input.zh{background:var(--zh-bg);border:1px solid var(--line);color:var(--zh-ink);font-weight:650;font-size:16px}
+input:focus{outline:none;border-color:var(--focus);border-style:solid;box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 25%,transparent)}
+input.zh.dirty{border-color:var(--accent)}
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:7;background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 22px;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+button{font:inherit;font-weight:650;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:9px 16px;border-radius:10px;cursor:pointer;transition:filter .15s,transform .05s}
+button:hover{filter:brightness(1.06)} button:active{transform:translateY(1px)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 35%,transparent)}
+.jsonbox{max-width:1060px;margin:0 auto;padding:0 22px}
+.jsonbox textarea{width:100%;height:220px;margin-top:6px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;display:none}
+.jsonbox textarea.show{display:block}
+.toast{position:fixed;left:50%;bottom:78px;transform:translate(-50%,16px);opacity:0;pointer-events:none;background:var(--card-bg);color:var(--card);border:1px solid var(--card-line);padding:10px 18px;border-radius:11px;font-weight:700;transition:.22s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hd">
+    <h1><span class="dot"></span>韓文影片字幕編輯器</h1>
+    <p>改「中文」欄就好 —— 秒數與韓文是跟原片對位用的,通常不用動。改完按下方 <b>複製 JSON</b>,把整段貼回對話給我,我就照這份輸出整支影片(韓文、音軌、長度都不會動)。</p>
+    <div class="legend"><span class="badge deco">🩷 特效字 · 粉紅大字</span><span class="badge card">🟢 資訊卡 · 片尾三行</span><span class="badge count" id="cnt">已改 0 句</span></div>
+  </header>
+  <div class="wrap">
+    <div class="tblwrap"><table>
+      <thead><tr><th>#</th><th>秒數</th><th>韓文原文</th><th>中文(可編輯)</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <div class="jsonbox"><textarea id="jsonout" readonly spellcheck="false"></textarea></div>
+  </div>
+  <div class="foot">
+    <button class="primary" id="btnCopy">📋 複製 JSON(貼回對話)</button>
+    <button id="btnShow">👁 顯示/隱藏 JSON</button>
+    <button id="btnReset">↺ 全部還原</button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+<script>
+const ORIG = [{"s": 0.8, "e": 2.2, "style": "rail", "ko": "언니들 잠깐만요!", "zh": "姐妹們，等等！"}, {"s": 2.5, "e": 4.1, "style": "rail", "ko": "저 또 신상 데려왔어요💚", "zh": "我又帶新款來啦"}, {"s": 4.4, "e": 6.3, "style": "rail", "ko": "그것도 바로바로 우리가 사랑하는", "zh": "而且就是我們最愛的"}, {"s": 6.4, "e": 7.1, "style": "rail", "ko": "올인원", "zh": "連身褲"}, {"s": 7.2, "e": 7.9, "style": "rail", "ko": "제품으로요!!", "zh": "的款式喔！"}, {"s": 8.0, "e": 9.0, "style": "rail", "ko": "나시랑 반바지", "zh": "背心配短褲"}, {"s": 9.1, "e": 11.0, "style": "rail", "ko": "점프수트가 세트인 제품인데요", "zh": "是一套連身褲套裝"}, {"s": 11.1, "e": 12.1, "style": "rail", "ko": "요 아이는 허리에", "zh": "這件的腰部"}, {"s": 12.2, "e": 13.2, "style": "rail", "ko": "스트링이 들어 있어서", "zh": "有抽繩設計"}, {"s": 13.4, "e": 14.7, "style": "rail", "ko": "풀러 입으셔도 귀여운", "zh": "放鬆穿也很可愛"}, {"s": 14.8, "e": 16.1, "style": "rail", "ko": "무드로 연출 가능한데", "zh": "能穿出可愛氛圍"}, {"s": 16.6, "e": 18.8, "style": "rail", "ko": "당연히 77 언니들도 편하게 착용", "zh": "當然，77號女孩也能輕鬆穿"}, {"s": 19.0, "e": 19.8, "style": "rail", "ko": "가능하세요😆", "zh": "都沒問題喔"}, {"s": 20.1, "e": 21.2, "style": "rail", "ko": "언니들 그거 알죠", "zh": "姐妹們懂吧"}, {"s": 21.6, "e": 23.8, "style": "rail", "ko": "이런 점프수트 입을 때 밑위길이", "zh": "穿這種連身褲時，褲襠長度"}, {"s": 23.9, "e": 24.9, "style": "rail", "ko": "짧으면 어어어엄청", "zh": "太短的話真的"}, {"s": 25.0, "e": 25.8, "style": "rail", "ko": "불편한 거!", "zh": "超不方便！"}, {"s": 26.2, "e": 28.3, "style": "rail", "ko": "근데 요 아이는 밑위길이도 길게", "zh": "但這款連褲襠都做得夠長"}, {"s": 28.4, "e": 30.3, "style": "rail", "ko": "나와서 진짜 세상 편해요", "zh": "真的舒服到不行"}, {"s": 30.7, "e": 31.5, "style": "rail", "ko": "그리고 버클", "zh": "而且搭扣"}, {"s": 31.6, "e": 33.6, "style": "rail", "ko": "장식이 멋스러운 레인부츠랑 같이", "zh": "配上有型扣飾的雨靴"}, {"s": 33.7, "e": 34.4, "style": "rail", "ko": "매치하면", "zh": "搭起來"}, {"s": 34.5, "e": 35.3, "style": "rail", "ko": "게임 끝!", "zh": "直接完美！"}, {"s": 35.5, "e": 37.0, "style": "rail", "ko": "종아리 조이는 것 없이", "zh": "不會勒小腿"}, {"s": 37.1, "e": 37.9, "style": "rail", "ko": "너무 편해요", "zh": "超舒服"}, {"s": 38.3, "e": 38.8, "style": "rail", "ko": "요즘처럼", "zh": "像最近這種"}, {"s": 38.9, "e": 41.0, "style": "rail", "ko": "오락가락 하는 날씨에는 딱이죠?", "zh": "忽冷忽熱的天氣正適合吧？"}, {"s": 41.4, "e": 42.0, "style": "rail", "ko": "그럼 이번", "zh": "那麼這次"}, {"s": 42.1, "e": 43.5, "style": "rail", "ko": "코디도 많이 사랑해 주세요", "zh": "這套穿搭也請多多喜歡"}, {"s": 44.0, "e": 46.6, "style": "rail", "ko": "문의사항 있으시면 언제든지 댓글", "zh": "有任何問題隨時留言"}, {"s": 46.8, "e": 48.1, "style": "rail", "ko": "또는 디엠 주세요💌", "zh": "或私訊我喔"}, {"s": 48.4, "e": 50.9, "style": "rail", "ko": "사랑해요 언니들! 나 또 고백한다🤣", "zh": "愛你們喔姐妹們！我又告白啦"}, {"s": 52.3, "e": 53.0, "style": "rail", "ko": "안녕👋", "zh": "掰掰"}];
+const DATA = JSON.parse(JSON.stringify(ORIG));
+const rows=document.getElementById('rows');
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function build(){
+  rows.innerHTML='';
+  DATA.forEach((c,i)=>{
+    const tr=document.createElement('tr');
+    tr.className=c.style==='deco'?'deco':c.style==='card'?'card':'';
+    const tag=c.style==='deco'?'<span class="badge deco tag">特效</span>':c.style==='card'?'<span class="badge card tag">卡片</span>':'';
+    tr.innerHTML='<td class="idx">'+(i+1)+'</td>'+
+      '<td class="sec"><span class="sec-in"><input class="num" data-i="'+i+'" data-k="s" value="'+c.s+'">–<input class="num" data-i="'+i+'" data-k="e" value="'+c.e+'"></span></td>'+
+      '<td class="ko"><input class="ko" data-i="'+i+'" data-k="ko" value="'+esc(c.ko)+'">'+tag+'</td>'+
+      '<td><input class="zh" data-i="'+i+'" data-k="zh" value="'+esc(c.zh)+'"></td>';
+    rows.appendChild(tr);
+  });
+  refresh();
+}
+function refresh(){
+  let n=0; DATA.forEach((c,i)=>{if(c.zh!==ORIG[i].zh)n++});
+  document.getElementById('cnt').textContent='已改 '+n+' 句';
+  document.querySelectorAll('input.zh').forEach(inp=>{const i=+inp.dataset.i;inp.classList.toggle('dirty',DATA[i].zh!==ORIG[i].zh)});
+}
+rows.addEventListener('input',e=>{
+  const t=e.target; if(t.dataset.i===undefined)return;
+  const i=+t.dataset.i,k=t.dataset.k; let v=t.value;
+  if(k==='s'||k==='e'){const f=parseFloat(v);if(!isNaN(f))DATA[i][k]=f;} else DATA[i][k]=v;
+  if(k==='zh')refresh();
+});
+function outJSON(){return JSON.stringify(DATA,null,1)}
+function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1900)}
+document.getElementById('btnCopy').onclick=()=>{const s=outJSON();const done=()=>toast('已複製 ✓ 貼回對話給我');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(done).catch(fb)}else fb();
+  function fb(){const ta=document.getElementById('jsonout');ta.classList.add('show');ta.value=s;ta.focus();ta.select();try{document.execCommand('copy');done()}catch(_){toast('請手動選取下方 JSON 複製')}}};
+document.getElementById('btnShow').onclick=()=>{const ta=document.getElementById('jsonout');ta.value=outJSON();ta.classList.toggle('show');if(ta.classList.contains('show')){ta.focus();ta.select()}};
+document.getElementById('btnReset').onclick=()=>{for(let i=0;i<DATA.length;i++)DATA[i]=JSON.parse(JSON.stringify(ORIG[i]));build();toast('已還原全部')};
+build();
+</script>
+</body>
+</html>
